@@ -12,8 +12,19 @@ securityContext: {{- toYaml . | nindent 2 }}
 {{- with $values.resources }}
 resources: {{- toYaml . | nindent 2 }}
 {{- end }}
+env:
+  - name: IAMRUNTIME_EVENTS_NATS_TOKEN
+    valueFrom:
+      secretKeyRef:
+        key: natsToken
+        name: {{ include "iam-runtime-infratographer.resource.fullname" (dict "suffix" "secrets" "context" $) | quote }}
+  - name: IAMRUNTIME_ACESSSTOKEN_SOURCE_CLIENTCREDENTIALS_CLIENTSECRET
+    valueFrom:
+      secretKeyRef:
+        key: clientSecret
+        name: {{ include "iam-runtime-infratographer.resource.fullname" (dict "suffix" "secrets" "context" $) | quote }}
 {{- with $values.extraEnv }}
-env: {{- toYaml . | nindent 2 }}
+ {{- toYaml . | nindent 2 }}
 {{- end }}
 volumeMounts:
   - name: {{ include "iam-runtime-infratographer.resource.fullname" (dict "suffix" "config" "context" $) | quote }}
